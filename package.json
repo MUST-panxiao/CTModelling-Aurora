@@ -1,0 +1,12 @@
+{
+  "name": "ctmodelling-aurora",
+  "version": "0.1.0",
+  "description": "CTModelling Aurora 设计语言 —— 极光背景 + 毛玻璃 hairline + 阿里普惠体 + Element Plus 主题对齐。面向智能体读者的「设计 token + 规范文档 + 可拷贝范式」三件套。",
+  "keywords": ["design-system", "design-tokens", "aurora", "element-plus", "vue3", "hairline", "ctmodelling"],
+  "license": "MIT",
+  "peerDependencies": {
+    "element-plus": "^2.13.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.0.0 || ^5.0.0"
+  }
+}

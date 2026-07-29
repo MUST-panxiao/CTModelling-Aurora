@@ -1,0 +1,311 @@
+@use './responsive.scss' as *;
+
+// ============================================================
+// Aurora 设计 Token —— 「专业克制 · 极光呼吸」
+// CTModelling 团队多平台共用的设计语言（单一信源 SSOT）。
+// 血缘链：源头版本（最完整）→ 精简版 → 各业务平台对齐源头
+//         → 抽象为 Aurora（SSOT，收敛最新规则）。血缘见 docs/design-tokens.md §0。
+//
+//   · 主色家族：品牌蓝 #2563eb（白底 WCAG AA，全平台统一）
+//   · 极光五色 --mp-glow-*：仅供 aurora 背景装饰，禁用于文字 / 图表
+//   · 字体：阿里普惠体 3.0（local() 优先，CDN 降级）
+//   · hairline 体系：卡片边框一律走 box-shadow 的 1px edge，禁用 border（见 docs/design-tokens.md）
+//   · Element Plus 主题：主色 + 语义色 + 中性灰阶三层 CSS 变量覆盖（见 :root 末段）
+// 修改主题只动本文件，全站（含 Element Plus）自动跟随。
+// ============================================================
+
+// 阿里普惠体 3.0：local() 优先命中用户本地字体（0 网络开销），
+// 缺失时由 jsDelivr CDN 降级；font-display: swap 避免 FOIT。
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3.0';
+  src:
+    local('Alibaba PuHuiTi 3.0 Regular'),
+    local('AlibabaPuHuiTi-3-55-Regular'),
+    url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-55-regular/AlibabaPuHuiTi-3-55-Regular.woff2')
+      format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3 95 Black';
+  src:
+    local('Alibaba PuHuiTi 3 95 Black'),
+    local('AlibabaPuHuiTi-3-95-ExtraBold'),
+    url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-95-extrabold/AlibabaPuHuiTi-3-95-ExtraBold.woff2')
+      format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3 Bold';
+  src:
+    local('Alibaba PuHuiTi 3 85 Bold'),
+    local('AlibabaPuHuiTi-3-85-Bold'),
+    url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-85-bold/AlibabaPuHuiTi-3-85-Bold.woff2')
+      format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  // ── 品牌主色（#2563eb 家族，白底 WCAG AA） ──
+  --mp-primary: #2563eb;
+  --mp-primary-hover: #1d4ed8;
+  --mp-primary-light: #3b82f6;
+  --mp-primary-lighter: #60a5fa;
+  --mp-primary-deep: #1e40af;
+  --mp-primary-bg: rgba(37, 99, 235, 0.06);
+  --mp-primary-bg-hover: rgba(37, 99, 235, 0.1);
+
+  // ── 极光光晕色（仅供 aurora 背景装饰，禁用于文字 / 图表） ──
+  --mp-glow-green: #a8cf45;
+  --mp-glow-orange: #f58634;
+  --mp-glow-blue-light: #91d8f7;
+  --mp-glow-blue-mid: #7caada;
+  --mp-glow-blue-deep: #5d9ad2;
+
+  // ── 字体 token（本地优先，缺失时 CDN 降级） ──
+  --mp-font-sans:
+    'Alibaba PuHuiTi 3.0', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+    'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+  --mp-font-display:
+    'Alibaba PuHuiTi 3 95 Black', 'Alibaba PuHuiTi 3.0', -apple-system,
+    'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mp-font-bold:
+    'Alibaba PuHuiTi 3 Bold', 'Alibaba PuHuiTi 3.0', -apple-system,
+    'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  // ── 背景 / 表面 ──
+  --mp-bg: #f5f6f8;
+  --mp-bg-secondary: #edeef1;
+  --mp-surface: #ffffff;
+  --mp-surface-hover: #f0f0f2;
+  --mp-surface-active: #e4e4ee;
+
+  // ── 文字 ──
+  --mp-text: #1a1a1e;
+  --mp-text-secondary: #333333;
+  --mp-text-regular: #555555;
+  --mp-text-muted: #707070;
+  --mp-text-placeholder: #999999;
+
+  // ── 边框（仅作 token 占位；卡片实际边界一律走 shadow hairline，见下方 --mp-shadow-*） ──
+  --mp-border: #c8c8cc;
+  --mp-border-strong: #a0a0a6;
+  --mp-border-subtle: #e2e2e6;
+  --mp-divider: #ebebef;
+
+  // ── 语义状态 ──
+  --mp-success: #22c55e;
+  --mp-warning: #f97316;
+  --mp-danger: #dc2626;
+  --mp-info: #2563eb;
+
+  // ── 圆角 ──
+  --mp-radius-sm: 4px;
+  --mp-radius-md: 8px;
+  --mp-radius-lg: 12px;
+  --mp-radius-pill: 9999px;
+  --mp-radius-circle: 50%;
+
+  // ── 阴影（亮色 hairline 体系，对齐源头完整版） ──
+  // surface-hover / overlay 末尾的 inset top-glow 不可省略（血缘），否则失去顶部高光。
+  --mp-shadow-flat: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --mp-shadow-surface:
+    0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --mp-shadow-surface-hover:
+    0 0 0 1px rgba(37, 99, 235, 0.2), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --mp-shadow-overlay:
+    0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  // ── 阴影原子原语（hairline，供自由组合，用法见 docs/design-tokens.md） ──
+  --mp-hairline-edge: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --mp-hairline-contact: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --mp-hairline-ambient: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --mp-hairline-top-glow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  // ── 间距 ──
+  --mp-space-1: 4px;
+  --mp-space-2: 8px;
+  --mp-space-3: 12px;
+  --mp-space-4: 16px;
+  --mp-space-5: 24px;
+  --mp-space-6: 32px;
+
+  // ── 布局尺寸 ──
+  --mp-header-height: 56px;
+
+  // ============================================================
+  // 业务扩展 token（示例值，按需保留 / 删除 / 改值）
+  // 以下为公卫监测类项目的常用语义色，非 Aurora 核心。不需要可直接整段删除。
+  // ============================================================
+
+  // ── 公卫风险四级（预警 / 图表 / 标签统一） ──
+  --mp-risk-high: #dc2626;
+  --mp-risk-elevated: #f97316;
+  --mp-risk-medium: #eab308;
+  --mp-risk-low: #22c55e;
+
+  // ── 图表色板（供 JS 经 getComputedStyle 读取；按业务自定义语义） ──
+  // 1=主监测曲线（主色家族）·2=对比序列(琥珀)·3=高风险/告警(砖红)·4=中风险(橙黄)
+  // 5=正常/轻症(翠绿)·6=辅助指标(天蓝)·7=备用紫
+  --mp-chart-1: #2563eb;
+  --mp-chart-2: #f59e0b;
+  --mp-chart-3: #dc2626;
+  --mp-chart-4: #fb923c;
+  --mp-chart-5: #16a34a;
+  --mp-chart-6: #0ea5e9;
+  --mp-chart-7: #8b5cf6;
+  --mp-chart-band: rgba(37, 99, 235, 0.15); // 预测置信带面积
+
+  // ── 强度分级（阈值线 / 地图填色 / 强度标签；示例为五级，去绿） ──
+  --mp-grade-baseline: #93c5fd; // 基线（浅蓝）
+  --mp-grade-watch: #facc15; // 关注（黄）
+  --mp-grade-medium: #fb923c; // 中等（橙）
+  --mp-grade-high: #dc2626; // 高（红）
+  --mp-grade-very-high: #7f1d1d; // 非常高（深红）
+  --mp-grade-unknown: #9eb3c8; // 有数据但无阈值（浅蓝灰）
+  --mp-grade-empty: #c0c0c4; // 完全无记录（中性灰底色）
+
+  // ============================================================
+  // Element Plus 主题覆盖 —— 主色 #2563eb 家族，按钮 / 链接 / 选中态全统一
+  // 本文件必须在 element-plus/dist/index.css 之后引入才能覆盖 --el-*
+  // ============================================================
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #5a8af0;
+  --el-color-primary-light-5: #8daaf5;
+  --el-color-primary-light-7: #b0c8fa;
+  --el-color-primary-light-8: #c2d6fc;
+  --el-color-primary-light-9: #d4e3fd;
+  --el-color-primary-dark-2: #1d4ed8;
+
+  // EP 语义色对齐 tokens（el-tag / el-alert 等随之统一）
+  --el-color-success: #22c55e;
+  --el-color-warning: #f97316;
+  --el-color-danger: #dc2626;
+  --el-color-error: #dc2626;
+  --el-color-info: #707070;
+
+  // ── EP 中性灰阶对齐 Aurora（合并自最新规则）──
+  // 让全站 EP 组件（ElCard / ElTable / ElDialog / ElForm / ElInput...）的中性灰阶
+  // 自动跟随 Aurora 调色板，消除「EP 默认灰」与品牌系统的割裂。
+  // 仅映射中性灰阶；主色 / 语义色已由上方 --el-color-* 覆盖，圆角 / 阴影不动。
+  // 文字
+  --el-text-color-primary: var(--mp-text);
+  --el-text-color-regular: var(--mp-text-regular);
+  --el-text-color-secondary: var(--mp-text-muted);
+  --el-text-color-placeholder: var(--mp-text-placeholder);
+  --el-text-color-disabled: var(--mp-text-placeholder);
+  --el-text-color-disabled-light: var(--mp-border);
+  // 背景
+  --el-bg-color: var(--mp-surface);
+  --el-bg-color-page: var(--mp-bg);
+  --el-bg-color-overlay: var(--mp-surface);
+  // 填充
+  --el-fill-color: var(--mp-bg-secondary);
+  --el-fill-color-light: var(--mp-surface-hover);
+  --el-fill-color-lighter: var(--mp-bg-secondary);
+  --el-fill-color-extra-light: var(--mp-bg-secondary);
+  --el-fill-color-dark: var(--mp-surface-active);
+  --el-fill-color-blank: var(--mp-surface);
+  // 边框
+  --el-border-color: var(--mp-border);
+  --el-border-color-light: var(--mp-border-subtle);
+  --el-border-color-lighter: var(--mp-border-subtle);
+  --el-border-color-extra-light: var(--mp-divider);
+  --el-border-color-dark: var(--mp-border-strong);
+}
+
+* {
+  box-sizing: border-box;
+  // 细滚动条（hairline），对齐 tokens
+  scrollbar-color: var(--mp-border) transparent;
+  scrollbar-width: thin;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--mp-font-sans);
+  font-size: 14px;
+  background-color: var(--mp-bg);
+  color: var(--mp-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: var(--mp-primary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--mp-primary-hover);
+  }
+}
+
+// textarea 字体跟随系统
+textarea {
+  font-family: inherit;
+}
+
+// 流体排版工具
+.text-fluid-sm {
+  font-size: clamp(12px, 1.2vw, 14px);
+}
+
+.text-fluid-md {
+  font-size: clamp(14px, 1.4vw, 18px);
+}
+
+// ── 高频工具类（业务模板里 Element Plus 组件模板常用，全局保留；可按需删） ──
+.w-full {
+  width: 100%;
+}
+
+.op-50 {
+  opacity: 0.5;
+}
+
+.text-xs {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+// ============================================================
+// Element Plus 组件观感对齐 Aurora —— 毛玻璃 hairline 卡（合并自最新规则）
+// 全站 ElCard 默认呈现与介绍页 / 工作台一致的观感：
+// 半透明白底 + backdrop-blur + shadow hairline edge + 12px 圆角 + flat shadow。
+// 边框交给 shadow 的 hairline edge（见 box-shadow），禁用 EP 默认 border 避免双线。
+// hover 反馈仅作用于可交互卡片（.is-hover）。
+// ============================================================
+.el-card {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.72);
+  border-radius: var(--mp-radius-lg);
+  box-shadow: var(--mp-shadow-flat);
+  backdrop-filter: blur(6px);
+  transition: box-shadow 0.2s ease;
+}
+
+.el-card.is-hover:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: var(--mp-shadow-surface-hover);
+}
+
+.el-card__header {
+  border-bottom: 1px solid var(--mp-divider);
+  font-family: var(--mp-font-bold);
+}

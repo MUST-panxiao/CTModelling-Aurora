@@ -1,0 +1,41 @@
+// 响应式断点 mixin —— 与 useResponsive.ts 的 JS 断点保持一致
+// 用法：@include mobile { ... } / @include tablet { ... }
+//
+// 注意：SCSS 媒体查询断点与 composables/useResponsive.ts 的 JS 常量必须一致，
+// 改一处必须同步改另一处（design.md §8 双轨断点一致原则）。
+
+$mobile-max: 767px;
+$tablet-min: 768px;
+$tablet-max: 1023px;
+$desktop-min: 1024px;
+$large-desktop-min: 1440px;
+
+@mixin mobile {
+  @media (max-width: $mobile-max) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $tablet-min) and (max-width: $tablet-max) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $desktop-min) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: $large-desktop-min) {
+    @content;
+  }
+}
+
+// 触摸目标最小尺寸（iOS HIG）
+@mixin touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
