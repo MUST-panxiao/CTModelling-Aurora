@@ -1,7 +1,7 @@
 // ============================================================
 // Aurora 设计 Token —— 「专业克制 · 极光呼吸」
 // CTModelling 团队多平台共用的设计语言（单一信源 SSOT）。
-// @version 0.2.2 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
+// @version 0.2.3 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
 // 升级前先核对本指纹，判断你平台携带的 Aurora 版本；变更见仓库 CHANGELOG.md。
 // 血缘链：源头版本（最完整）→ 精简版 → 各业务平台对齐源头
 //         → 抽象为 Aurora（SSOT，收敛最新规则）。血缘见 docs/design-tokens.md §0。
@@ -60,8 +60,9 @@
   --mp-primary-light: #3b82f6;
   --mp-primary-lighter: #60a5fa;
   --mp-primary-deep: #1e40af;
-  // 主色 RGB 数值档：供 rgba(var(--mp-primary-rgb), α) 组合（含 hover ring），
-  // 换肤时交互反馈色自动跟随。刻意不走 color-mix（旧内核 IACVT 会整段失效，见 0.2.1）。
+  // 主色 RGB 数值档：供 rgba(var(--mp-primary-rgb), α) 组合（hover ring、primary-bg、chart-band）。
+  // 它是与 --mp-primary 并列的兄弟 token：换肤时两者需一并修改，ring/primary-bg 随之跟随
+  // （非自动派生）。刻意不走 color-mix（旧内核 IACVT 会整段失效，见 0.2.1）。
   --mp-primary-rgb: 37, 99, 235;
   --mp-primary-bg: rgba(var(--mp-primary-rgb), 0.06);
   --mp-primary-bg-hover: rgba(var(--mp-primary-rgb), 0.1);
@@ -120,7 +121,7 @@
 
   // ── 阴影（亮色 hairline 体系，对齐源头完整版） ──
   // surface-hover / overlay 末尾的 inset top-glow 不可省略（血缘），否则失去顶部高光。
-  // top-glow 分级是有意设计：surface/flat 档 0.5，surface-hover / overlay 档 0.6——
+  // top-glow 分级是有意设计：surface 档 0.5（flat 不含 top-glow 项），surface-hover / overlay 档 0.6——
   // 交互反馈与浮层需要更强的顶部高光，勿「对齐」抹平。
   --mp-shadow-flat: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --mp-shadow-surface:
@@ -189,7 +190,7 @@
   --mp-chart-5: #16a34a;
   --mp-chart-6: #0ea5e9;
   --mp-chart-7: #8b5cf6;
-  --mp-chart-band: rgba(37, 99, 235, 0.15); // 预测置信带面积
+  --mp-chart-band: rgba(var(--mp-primary-rgb), 0.15); // 预测置信带面积（随主色换肤）
 
   // ── 强度分级（阈值线 / 地图填色 / 强度标签；示例为五级，去绿） ──
   --mp-grade-baseline: #93c5fd; // 基线（浅蓝）
@@ -212,7 +213,7 @@
   --el-color-primary: var(--mp-primary);
   --el-color-primary-light-3: #6692f1;
   --el-color-primary-light-5: #92b1f5;
-  --el-color-primary-light-7: #bed0f8;
+  --el-color-primary-light-7: #bed0f9;
   --el-color-primary-light-8: #d3e0fb;
   --el-color-primary-light-9: #e9effd;
   --el-color-primary-dark-2: var(--mp-primary-hover);
@@ -243,7 +244,7 @@
   --el-text-color-secondary: var(--mp-text-muted);
   --el-text-color-placeholder: var(--mp-text-placeholder);
   --el-text-color-disabled: var(--mp-text-disabled);
-  --el-text-color-disabled-light: var(--mp-border);
+  // 注：EP 无 --el-text-color-disabled-light 变量（2.14.5 :root 实测仅 5 档文字色），不映射。
   // 背景
   --el-bg-color: var(--mp-surface);
   --el-bg-color-page: var(--mp-bg);

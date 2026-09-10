@@ -72,7 +72,7 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 
 组合关系：`surface = edge + contact + ambient + top-glow`。
 
-> top-glow 分级是有意设计：surface / flat 档白光 0.5，surface-hover / overlay 档 0.6——交互反馈与浮层需要更强的顶部高光，勿「对齐」抹平。
+> top-glow 分级是有意设计：surface 档白光 0.5（flat 不含 top-glow 项），surface-hover / overlay 档 0.6——交互反馈与浮层需要更强的顶部高光，勿「对齐」抹平。
 
 ---
 
@@ -111,12 +111,12 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 ### 6.1 主色 + 语义色
 `--el-color-primary` / `success` / `warning` / `danger` / `info` → 经 `var(--mp-*)` 引用——**改 `--mp-*` 值全站（含 EP）自动跟随**。light-3~9 先落 hex 兜底，`@supports (color: color-mix(...))` 内改走公式值（EP 官方公式 mix(白, 主色, N×10%)）：**不能省 @supports 直接「hex + color-mix 两行同写」**——自定义属性无解析期校验、级联后者恒胜，var() 替换出非法值时按 IACVT 回退 initial 而非前行 hex，旧内核（Chrome <111 / Safari <16.2 / Firefox <113）上会整层失效。按钮、链接、选中态、el-tag / el-alert 随之统一。注意 `--mp-info` 为中性灰 `#707070`（与 EP 惯例一致，勿改回品牌蓝以免与 primary 混淆）。
 
-### 6.2 中性灰阶映射（20 条）
+### 6.2 中性灰阶映射（19 条）
 把 EP 的文字 / 背景 / 填充 / 边框灰阶全量映射到 Aurora 调色板，消除「EP 默认灰」与品牌系统的割裂：
 
 | EP 变量族 | 映射到 | 条数 |
 |---|---|---|
-| `--el-text-color-*` | `--mp-text*` | 6 |
+| `--el-text-color-*` | `--mp-text*` | 5 |
 | `--el-bg-color*` | `--mp-surface` / `--mp-bg` | 3 |
 | `--el-fill-color-*` | `--mp-bg-secondary` / `--mp-surface*` | 6 |
 | `--el-border-color-*` | `--mp-border*` | 5 |
@@ -172,7 +172,7 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 | 极光底色 | `--mp-bg-aurora-top` / `--mp-bg-aurora-bottom` | `#fdfdff` / `#f3f6fb`（PortalLayout `.aurora` 基线渐变） |
 | 语义状态 | `--mp-success` / `--mp-warning` / `--mp-danger` / `--mp-info` | `#22c55e` / `#f97316` / `#dc2626` / **`#707070`（中性灰，见 §6.1）** |
 | 文字层级 | `--mp-text` / `--mp-text-secondary` / `--mp-text-regular` / `--mp-text-muted` / `--mp-text-placeholder` / `--mp-text-disabled` | `#1a1a1e` 主文字 · `#333333` 次强调 · `#555555` 常规正文 · `#707070` 弱化 · `#767676` 占位 · `#a5a5aa` 禁用（明显浅于占位，保持禁用可供性） |
-| 主色派生 | `--mp-primary-rgb` | `37, 99, 235` —— 供 `rgba(var(--mp-primary-rgb), α)` 组合（hover ring、primary-bg），换肤自动跟随 |
+| 主色派生 | `--mp-primary-rgb` | `37, 99, 235` —— 供 `rgba(var(--mp-primary-rgb), α)` 组合（hover ring、primary-bg、chart-band）；与 `--mp-primary` 并列的兄弟 token，换肤时需一并修改（非自动派生） |
 | 间距 | `--mp-space-1` … `--mp-space-6` | 4 / 8 / 12 / 16 / 24 / 32px |
 | 布局 | `--mp-header-height` | `56px` |
 | 过渡 | `--mp-duration-fast` / `--mp-duration-normal` | `0.2s` / `0.3s` |
