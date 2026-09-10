@@ -2,9 +2,18 @@
 
 本仓库遵循 [Semantic Versioning](https://semver.org/)。`styles/index.scss` 头部带 `@version` 指纹，拷贝方据此对号入座。
 
+## 0.2.1 (2026-09-11)
+
+Delta 复评（v3）当轮热修，修复 0.2.0 自引入的两处确定性缺陷：
+
+- **fix(styles)**: light-3~9 的 color-mix 公式行移入 `@supports` 隔离——自定义属性「后行非法回退前行」不成立（级联后者恒胜 + IACVT 回退 initial 而非前行 hex），原写法在不支持 color-mix 的内核（Chrome <111 / Safari <16.2 / Firefox <113，含 iOS 15 WKWebView）上主色派生色整层失效（背景变透明）。
+- **fix(styles)**: `.el-card__header` 补 `font-weight: 700`——字体统一单 family 后仅改 family 不再产生粗体（0.2.0 回归）。
+- **docs**: §6.1 改述 @supports 机制；§6.3 片段补 transition 行与 header 字重，并注明「EP shadow prop 已被压平为装饰，交互反馈一律挂 `.is-interactive`」。
+- **chore**: 补记 0.2.0 一处遗漏的行为变化——顶栏 `transition` 移除了 `backdrop-filter` 项（blur 随 background 淡入，不再单独过渡）；移除本文件对外部归档路径的引用。
+
 ## 0.2.0 (2026-09-11)
 
-v2 全量审查（契约级）修复，见归档 `28_CTM-Aurora/REVIEW_REPORT_v2.md`：
+v2 全量契约级审查后的修复（8 Critical / 15 Warning / 10 Suggestion，28 项任务全处理）：
 
 - **fix(styles)**: 全局 ElCard 主题补 `.is-always-shadow` / `.is-hover-shadow` 同特异性压回 + 映射 `--el-box-shadow-*` → `--mp-shadow-*`（修复默认 el-card 渲染 EP 灰投影、hairline 丢失）。
 - **fix(styles)**: EP 主色/语义色改 `var(--mp-*)` 引用、light-3~9 改 `color-mix`（hex 兜底）——「改值即换肤全站自动跟随」成立；light-N 取 EP 官方公式口径，与 0.1.0 手调值略有出入。

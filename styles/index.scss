@@ -1,7 +1,7 @@
 // ============================================================
 // Aurora 设计 Token —— 「专业克制 · 极光呼吸」
 // CTModelling 团队多平台共用的设计语言（单一信源 SSOT）。
-// @version 0.2.0 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
+// @version 0.2.1 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
 // 升级前先核对本指纹，判断你平台携带的 Aurora 版本；变更见仓库 CHANGELOG.md。
 // 血缘链：源头版本（最完整）→ 精简版 → 各业务平台对齐源头
 //         → 抽象为 Aurora（SSOT，收敛最新规则）。血缘见 docs/design-tokens.md §0。
@@ -199,19 +199,16 @@
   // 本文件必须在 element-plus/dist/index.css 之后引入才能覆盖 --el-*
   // 主色 / 语义色经 var()/color-mix 引用 --mp-*：改 --mp-* 全站（含 EP）自动跟随。
   // ============================================================
-  // light-N 先落 hex 兜底（不支持 color-mix 的极旧内核），支持者走公式值
-  // （对齐 EP 官方公式 mix(白, 主色, N×10%)，与 0.1.0 手调值略有出入，取 EP 口径）。
+  // light-N：hex 行为兜底值；支持 color-mix 的内核在下方 @supports 内改走公式值
+  // （EP 官方公式 mix(白, 主色, N×10%)）。不能用「hex + color-mix 两行同写」做兜底——
+  // 自定义属性无解析期校验、级联后者恒胜，var() 替换出非法值时按 IACVT 回退 initial
+  // （背景变透明）而非回退前行 hex，旧内核上 light-3~9 会整层失效，必须用 @supports 隔离。
   --el-color-primary: var(--mp-primary);
   --el-color-primary-light-3: #5a8af0;
-  --el-color-primary-light-3: color-mix(in srgb, var(--mp-primary), #fff 30%);
   --el-color-primary-light-5: #8daaf5;
-  --el-color-primary-light-5: color-mix(in srgb, var(--mp-primary), #fff 50%);
   --el-color-primary-light-7: #b0c8fa;
-  --el-color-primary-light-7: color-mix(in srgb, var(--mp-primary), #fff 70%);
   --el-color-primary-light-8: #c2d6fc;
-  --el-color-primary-light-8: color-mix(in srgb, var(--mp-primary), #fff 80%);
   --el-color-primary-light-9: #d4e3fd;
-  --el-color-primary-light-9: color-mix(in srgb, var(--mp-primary), #fff 90%);
   --el-color-primary-dark-2: var(--mp-primary-hover);
 
   // EP 语义色对齐 tokens（el-tag / el-alert 等随之统一）
@@ -220,6 +217,15 @@
   --el-color-danger: var(--mp-danger);
   --el-color-error: var(--mp-danger);
   --el-color-info: var(--mp-info);
+
+  // 支持 color-mix 的内核：light-N 改走公式值，跟随 --mp-primary 换肤
+  @supports (color: color-mix(in srgb, red, white)) {
+    --el-color-primary-light-3: color-mix(in srgb, var(--mp-primary), #fff 30%);
+    --el-color-primary-light-5: color-mix(in srgb, var(--mp-primary), #fff 50%);
+    --el-color-primary-light-7: color-mix(in srgb, var(--mp-primary), #fff 70%);
+    --el-color-primary-light-8: color-mix(in srgb, var(--mp-primary), #fff 80%);
+    --el-color-primary-light-9: color-mix(in srgb, var(--mp-primary), #fff 90%);
+  }
 
   // ── EP 中性灰阶对齐 Aurora（合并自最新规则）──
   // 让全站 EP 组件（ElCard / ElTable / ElDialog / ElForm / ElInput...）的中性灰阶
@@ -353,4 +359,5 @@ textarea {
 .el-card__header {
   border-bottom: 1px solid var(--mp-divider);
   font-family: var(--mp-font-bold);
+  font-weight: 700; // 单 family 字体方案下必须显式配重，否则命中 400 字面（0.2.0 回归修）
 }

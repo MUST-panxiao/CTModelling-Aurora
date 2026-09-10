@@ -107,7 +107,7 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义色 + 中性灰阶 + 阴影 + 全局 ElCard 四层覆盖**（均在 `index.scss` 的 `:root` 与全局段，且文件必须在 `element-plus/dist/index.css` 之后引入）：
 
 ### 6.1 主色 + 语义色
-`--el-color-primary` / `success` / `warning` / `danger` / `info` → 经 `var(--mp-*)` 引用（light-3~9 用 `color-mix` 按 EP 官方公式 mix(白, 主色, N×10%) 派生，hex 兜底）——**改 `--mp-*` 值全站（含 EP）自动跟随**。按钮、链接、选中态、el-tag / el-alert 随之统一。注意 `--mp-info` 为中性灰 `#707070`（与 EP 惯例一致，勿改回品牌蓝以免与 primary 混淆）。
+`--el-color-primary` / `success` / `warning` / `danger` / `info` → 经 `var(--mp-*)` 引用——**改 `--mp-*` 值全站（含 EP）自动跟随**。light-3~9 先落 hex 兜底，`@supports (color: color-mix(...))` 内改走公式值（EP 官方公式 mix(白, 主色, N×10%)）：**不能省 @supports 直接「hex + color-mix 两行同写」**——自定义属性无解析期校验、级联后者恒胜，var() 替换出非法值时按 IACVT 回退 initial 而非前行 hex，旧内核（Chrome <111 / Safari <16.2 / Firefox <113）上会整层失效。按钮、链接、选中态、el-tag / el-alert 随之统一。注意 `--mp-info` 为中性灰 `#707070`（与 EP 惯例一致，勿改回品牌蓝以免与 primary 混淆）。
 
 ### 6.2 中性灰阶映射（20 条）
 把 EP 的文字 / 背景 / 填充 / 边框灰阶全量映射到 Aurora 调色板，消除「EP 默认灰」与品牌系统的割裂：
@@ -132,6 +132,7 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
   box-shadow: var(--mp-shadow-flat);
   -webkit-backdrop-filter: blur(6px);      // WKWebView / Safari ≤17
   backdrop-filter: blur(6px);
+  transition: box-shadow var(--mp-duration-fast) ease;
 }
 // EP 自带 .is-always-shadow / .is-hover-shadow（特异性 0,2,0）必须同特异性压回 hairline，
 // 否则默认 el-card（shadow prop 默认 "always"）渲染 EP 灰投影
@@ -141,8 +142,14 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 .el-card.is-hover-shadow:focus { box-shadow: var(--mp-shadow-flat); }
 // 可交互卡片 hover 反馈：业务侧自行挂 .is-interactive 类（勿用 is-hover，避开 EP 类命名空间）
 .el-card.is-interactive:hover { box-shadow: var(--mp-shadow-surface-hover); }
-.el-card__header { border-bottom: 1px solid var(--mp-divider); font-family: var(--mp-font-bold); }
+.el-card__header {
+  border-bottom: 1px solid var(--mp-divider);
+  font-family: var(--mp-font-bold);
+  font-weight: 700; // 单 family 字体方案下必须显式配重
+}
 ```
+
+> **shadow prop 已被压平为装饰**：EP 的 `shadow="always"/"hover"` 只剩占位语义（一律 flat），交互 hover 反馈一律挂 `.is-interactive`，勿依赖 shadow prop 期待 hover 效果。
 
 ---
 
