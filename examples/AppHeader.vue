@@ -6,7 +6,9 @@
 //
 // 拷进你的项目：把下方 isLoggedIn / userName / handleLogout 替换为你的 auth store
 // （如 useAuthStore() 的 isAuthenticated / user / logout）。其余结构与样式可直接用。
-// 依赖 styles/index.scss 的 --mp-* token；图标用 Iconify（CDN：<iconify-icon>）。
+// 依赖 styles/index.scss 的 --mp-* token；图标用 Iconify（CDN：<iconify-icon>，
+// 需在 index.html 引入其 script 标签，离线桌面端见 README「离线环境」）。
+// 断点用 responsive.scss 的 mixin（需 vite additionalData 或局部 @use 接线，见 README）。
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -89,14 +91,21 @@ function onCommand(command: string): void {
   <header class="app-header" :class="{ 'is-transparent': !scrolled, 'is-blur': scrolled }">
     <!-- 左：品牌 -->
     <div class="header-left">
-      <button v-if="isLoggedIn" class="icon-btn hamburger" aria-label="菜单" @click="drawerVisible = true">
+      <button
+        v-if="isLoggedIn"
+        type="button"
+        class="icon-btn hamburger"
+        aria-label="菜单"
+        :aria-expanded="drawerVisible"
+        @click="drawerVisible = true"
+      >
         <iconify-icon icon="tabler:menu-2" width="20"></iconify-icon>
       </button>
-      <div class="brand" @click="go('Home')">
+      <button type="button" class="brand" @click="go('Home')">
         <!-- 替换为你的 logo -->
         <span class="brand-mark">A</span>
         <span class="brand-title">产品名称</span>
-      </div>
+      </button>
     </div>
 
     <!-- 中：横向导航（桌面，仅登录态显示） -->
@@ -104,8 +113,10 @@ function onCommand(command: string): void {
       <button
         v-for="item in navItems"
         :key="item.name"
+        type="button"
         class="nav-item"
         :class="{ active: item.active }"
+        :aria-current="item.active ? 'page' : undefined"
         @click="go(item.name)"
       >
         <iconify-icon :icon="item.icon" class="nav-icon"></iconify-icon>
@@ -119,13 +130,13 @@ function onCommand(command: string): void {
         登录
       </el-button>
       <el-dropdown v-else trigger="click" @command="onCommand">
-        <div class="user-trigger">
+        <button type="button" class="user-trigger">
           <el-avatar :size="30" class="user-avatar">{{ avatarLetter }}</el-avatar>
           <span class="user-meta">
             <span class="user-name">{{ displayName }}</span>
           </span>
           <iconify-icon icon="tabler:chevron-down" class="caret"></iconify-icon>
-        </div>
+        </button>
         <template #dropdown>
           <el-dropdown-menu>
             <!-- 业务项目可在此追加「数据管理 / 用户管理」等角色可见项 -->
@@ -144,8 +155,10 @@ function onCommand(command: string): void {
         <button
           v-for="item in navItems"
           :key="item.name"
+          type="button"
           class="drawer-item"
           :class="{ active: item.active }"
+          :aria-current="item.active ? 'page' : undefined"
           @click="go(item.name)"
         >
           <iconify-icon :icon="item.icon" class="nav-icon"></iconify-icon>
@@ -165,8 +178,9 @@ function onCommand(command: string): void {
   padding: 0 max(24px, calc((100vw - 1280px) / 2));
   position: sticky;
   top: 0;
-  z-index: 100;
-  transition: background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+  z-index: var(--mp-z-header);
+  // backdrop-filter 不做过渡（各内核表现不一）：blur 随 background 淡入即可
+  transition: background var(--mp-duration-normal) ease, box-shadow var(--mp-duration-normal) ease;
 
   // 顶部：透明无阴影，透出极光光晕
   &.is-transparent {
@@ -175,7 +189,8 @@ function onCommand(command: string): void {
   }
   // 滚动后：毛玻璃半透明 + 细分割线（hairline-contact）
   &.is-blur {
-    background: rgba(255, 255, 255, 0.72);
+    background: var(--mp-surface-glass);
+    -webkit-backdrop-filter: blur(12px); // WKWebView / Safari ≤17
     backdrop-filter: blur(12px);
     box-shadow: var(--mp-hairline-contact);
   }
@@ -194,7 +209,16 @@ function onCommand(command: string): void {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--mp-primary);
+    outline-offset: 2px;
+  }
 }
 
 // 品牌 mark 占位（换成你的 <img> logo）
@@ -240,7 +264,7 @@ function onCommand(command: string): void {
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background var(--mp-duration-fast), color var(--mp-duration-fast);
 
   &:hover {
     background: var(--mp-surface-hover);
@@ -273,13 +297,20 @@ function onCommand(command: string): void {
   align-items: center;
   gap: 8px;
   padding: 4px 8px 4px 4px;
+  border: none;
+  background: transparent;
+  font: inherit;
   border-radius: var(--mp-radius-pill);
   cursor: pointer;
-  outline: none;
-  transition: background 0.2s;
+  transition: background var(--mp-duration-fast) ease;
 
   &:hover {
     background: var(--mp-surface-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mp-primary);
+    outline-offset: 2px;
   }
 }
 
@@ -316,13 +347,13 @@ function onCommand(command: string): void {
   color: var(--mp-text-regular);
 }
 
-// ── 汉堡（默认隐藏，移动端显示） ──
+// ── 汉堡（默认隐藏，移动端显示；44px 触摸目标，iOS HIG） ──
 .icon-btn {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: transparent;
   color: var(--mp-text);
@@ -331,6 +362,11 @@ function onCommand(command: string): void {
 
   &:hover {
     background: var(--mp-surface-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mp-primary);
+    outline-offset: 2px;
   }
 }
 
@@ -355,7 +391,7 @@ function onCommand(command: string): void {
   font-size: 15px;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background var(--mp-duration-fast), color var(--mp-duration-fast);
 
   &:hover {
     background: var(--mp-surface-hover);
@@ -368,8 +404,8 @@ function onCommand(command: string): void {
   }
 }
 
-// ── 响应式 ──
-@media (max-width: 1024px) {
+// ── 响应式（断点走 responsive.scss 的 mixin；接线见 README「智能体使用流程」） ──
+@include below-desktop {
   .main-nav {
     display: none;
   }
@@ -378,7 +414,7 @@ function onCommand(command: string): void {
   }
 }
 
-@media (max-width: 768px) {
+@include mobile {
   .app-header {
     padding: 0 12px;
     gap: 8px;

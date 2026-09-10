@@ -30,7 +30,7 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 
 ---
 
-## 2. 圆角 `--mp-radius-*`（4 档）
+## 2. 圆角 `--mp-radius-*`（5 档）
 
 | token | 值 | 用途 |
 |---|---|---|
@@ -38,6 +38,7 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 | `--mp-radius-md` | `8px` | **默认档**：卡片、按钮、输入框、PageHeader、tooltip |
 | `--mp-radius-lg` | `12px` | Dialog、Drawer、Hero 卡片、登录卡 |
 | `--mp-radius-pill` | `9999px` | 头像、状态点、胶囊按钮、胶囊标签 |
+| `--mp-radius-circle` | `50%` | 圆形（极光 shape、状态圆点） |
 
 **默认值 8px（柔和）**。无特殊情况一律用 `md`，不要随手写 `lg`。
 
@@ -103,10 +104,10 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 
 ## 6. Element Plus 主题对齐（合并自最新规则）
 
-Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**三层覆盖**（均在 `index.scss` 的 `:root`，且文件必须在 `element-plus/dist/index.css` 之后引入）：
+Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义色 + 中性灰阶 + 阴影 + 全局 ElCard 四层覆盖**（均在 `index.scss` 的 `:root` 与全局段，且文件必须在 `element-plus/dist/index.css` 之后引入）：
 
 ### 6.1 主色 + 语义色
-`--el-color-primary` / `success` / `warning` / `danger` / `info` → 对齐 `--mp-*`。按钮、链接、选中态、el-tag / el-alert 随之统一。
+`--el-color-primary` / `success` / `warning` / `danger` / `info` → 经 `var(--mp-*)` 引用（light-3~9 用 `color-mix` 按 EP 官方公式 mix(白, 主色, N×10%) 派生，hex 兜底）——**改 `--mp-*` 值全站（含 EP）自动跟随**。按钮、链接、选中态、el-tag / el-alert 随之统一。注意 `--mp-info` 为中性灰 `#707070`（与 EP 惯例一致，勿改回品牌蓝以免与 primary 混淆）。
 
 ### 6.2 中性灰阶映射（20 条）
 把 EP 的文字 / 背景 / 填充 / 边框灰阶全量映射到 Aurora 调色板，消除「EP 默认灰」与品牌系统的割裂：
@@ -118,20 +119,28 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**三层覆盖*
 | `--el-fill-color-*` | `--mp-bg-secondary` / `--mp-surface*` | 6 |
 | `--el-border-color-*` | `--mp-border*` | 5 |
 
-> 仅映射中性灰阶；主色 / 语义色由 6.1 覆盖，圆角 / 阴影不动（交给 hairline 体系）。
+> 仅映射中性灰阶；主色 / 语义色由 6.1 覆盖，圆角不动；阴影已并入 hairline 体系（`--el-box-shadow*` → `--mp-shadow-*`，EP 浮层组件随之统一）。
 
 ### 6.3 全局 `.el-card` 主题
 所有 `el-card` 默认呈现与介绍页 / 工作台一致的毛玻璃 hairline 观感，**无需逐个写样式**：
 
 ```scss
 .el-card {
-  border: none;                              // 禁用 EP 默认 border（见 §5 铁律）
-  background-color: rgba(255, 255, 255, 0.72);
+  border: none;                            // 禁用 EP 默认 border（见 §5 铁律）
+  background-color: var(--mp-surface-glass);
   border-radius: var(--mp-radius-lg);
   box-shadow: var(--mp-shadow-flat);
+  -webkit-backdrop-filter: blur(6px);      // WKWebView / Safari ≤17
   backdrop-filter: blur(6px);
 }
-.el-card.is-hover:hover { box-shadow: var(--mp-shadow-surface-hover); }
+// EP 自带 .is-always-shadow / .is-hover-shadow（特异性 0,2,0）必须同特异性压回 hairline，
+// 否则默认 el-card（shadow prop 默认 "always"）渲染 EP 灰投影
+.el-card.is-always-shadow,
+.el-card.is-hover-shadow,
+.el-card.is-hover-shadow:hover,
+.el-card.is-hover-shadow:focus { box-shadow: var(--mp-shadow-flat); }
+// 可交互卡片 hover 反馈：业务侧自行挂 .is-interactive 类（勿用 is-hover，避开 EP 类命名空间）
+.el-card.is-interactive:hover { box-shadow: var(--mp-shadow-surface-hover); }
 .el-card__header { border-bottom: 1px solid var(--mp-divider); font-family: var(--mp-font-bold); }
 ```
 
@@ -146,6 +155,21 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**三层覆盖*
 
 业务项目按需保留或整段删除业务扩展 token；核心 token 改值即换肤（全站含 EP 自动跟随）。
 
+### 7.1 其余核心 token 速查（值以 `styles/index.scss` 为准）
+
+| 类别 | token | 值 / 说明 |
+|---|---|---|
+| 表面（毛玻璃） | `--mp-surface-glass` / `--mp-surface-glass-light` | `rgba(255,255,255,0.72)` / `0.6` —— 全站统一玻璃底，勿再硬编码白值 |
+| 极光底色 | `--mp-bg-aurora-top` / `--mp-bg-aurora-bottom` | `#fdfdff` / `#f3f6fb`（PortalLayout `.aurora` 基线渐变） |
+| 语义状态 | `--mp-success` / `--mp-warning` / `--mp-danger` / `--mp-info` | `#22c55e` / `#f97316` / `#dc2626` / **`#707070`（中性灰，见 §6.1）** |
+| 间距 | `--mp-space-1` … `--mp-space-6` | 4 / 8 / 12 / 16 / 24 / 32px |
+| 布局 | `--mp-header-height` | `56px` |
+| 过渡 | `--mp-duration-fast` / `--mp-duration-normal` | `0.2s` / `0.3s` |
+| 层级 | `--mp-z-aurora` / `-content` / `-footer` / `-header` | 0 / 1 / 2 / 100 |
+| 字体补充 | `--mp-font-display` / `--mp-font-bold` | 单 family「Alibaba PuHuiTi 3」，用时配 `font-weight: 900` / `700` |
+| 工具类 | `.text-fluid-sm` / `.text-fluid-md` / `.w-full` / `.op-50` / `.text-xs` | 流体字号与高频工具类，随 styles/ 全局生效 |
+| 基础样式 | `body` 14px 基准 + 细滚动条 | 由 index.scss 全局提供，项目内勿重复定义 |
+
 ---
 
 ## 8. 新增页面 Checklist
@@ -153,12 +177,16 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**三层覆盖*
 新建业务页 / 组件时逐条核对：
 
 - [ ] **边框**：卡片边界走 `box-shadow`（`--mp-shadow-*` 或 `--mp-hairline-edge`），不写 `border: …solid`。
-- [ ] **颜色**：用 `--mp-*` token，不硬编码十六进制（主色 `--mp-primary`、文字 `--mp-text*`、表面 `--mp-surface*`）。
+- [ ] **颜色**：用 `--mp-*` token，不硬编码十六进制（主色 `--mp-primary`、文字 `--mp-text*`、表面 `--mp-surface*`、玻璃底 `--mp-surface-glass`）。
 - [ ] **圆角**：默认 `--mp-radius-md`（8px），仅 Dialog / 大卡用 `lg`。
 - [ ] **阴影**：默认 `--mp-shadow-surface`，hover 切 `surface-hover`，浮层用 `overlay`。
-- [ ] **字体**：标题用 `--mp-font-display` / `--mp-font-bold`，正文继承 `--mp-font-sans`。
-- [ ] **EP 组件**：直接用 `el-card` / `el-button` 等，无需自写主题（§6 已全局对齐）。
-- [ ] **响应式**：断点用 `responsive.scss` 的 mixin（`@include mobile { … }`）。
+- [ ] **字体**：标题用 `--mp-font-display`（配 `font-weight: 900`） / `--mp-font-bold`（配 `700`），正文继承 `--mp-font-sans`。
+- [ ] **EP 组件**：直接用 `el-card` / `el-button` 等，无需自写主题（§6 已全局对齐）；可交互 el-card 挂 `.is-interactive`。
+- [ ] **响应式**：断点用 `responsive.scss` 的 mixin（`@include mobile { … }`；前置接线：vite `additionalData` 全局注入或组件内局部 `@use`，见 README）。
+- [ ] **间距**：优先 `--mp-space-*`，不随手写魔法 px。
+- [ ] **图标**：确认 iconify-icon 运行时已引入（CDN script 或离线替代 `@iconify/vue` / SVG sprite，见 README）。
+- [ ] **键盘焦点**：可交互元素有 `:focus-visible` 焦点环，不用裸 `outline: none`。
+- [ ] **触摸目标**：触屏可达的按钮 ≥ 44px（`@include touch-target`）。
 
 ---
 
@@ -173,7 +201,7 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**三层覆盖*
 
 ## 10. 深色主题（备查）
 
-Aurora 当前仅亮色。深色阴影档（`--mp-shadow-*-dark`）已在早期版本定义，未来引入深色模式时移植：用 `[data-theme='dark']:root` 覆盖 token 即可，组件代码无需改动。
+Aurora 当前仅亮色。未来引入深色模式时：用 `:root[data-theme='dark']` 整段覆盖核心 token（背景 / 表面 / 文字 / 阴影各档）即可，组件代码无需改动；EP 侧另需引入其官方 dark css-vars 并同样映射到 `--mp-*`。
 
 ---
 
@@ -183,7 +211,7 @@ Aurora 当前仅亮色。深色阴影档（`--mp-shadow-*-dark`）已在早期�
 
 | 文件 | 演示的规则 |
 |---|---|
-| `examples/PortalLayout.vue` | 极光背景（纯 CSS，零资源依赖）—— `--mp-glow-*` 的用法 |
-| `examples/AppHeader.vue` | 双态毛玻璃顶栏 —— `--mp-hairline-contact` 做 scroll 后分割线 |
-| `examples/AppFooter.vue` | 透明底栏；内容分隔线用 `1px solid var(--mp-divider)`（§5 允许） |
-| `examples/HairlineCardExample.vue` | hairline 卡三式 —— §5 铁律 + §6.3 全局 ElCard 主题的对照 |
+| `examples/PortalLayout.vue` | 极光背景（纯 CSS，零资源依赖）—— `--mp-glow-*` / `--mp-bg-aurora-*` 的用法 |
+| `examples/AppHeader.vue` | 双态毛玻璃顶栏 —— `--mp-hairline-contact` 做 scroll 后分割线；键盘焦点环与 aria 范式 |
+| `examples/AppFooter.vue` | 透明底栏；内容分隔线用 1px div + `background: var(--mp-border-subtle)`（§5 允许的内容分隔，非卡片边界） |
+| `examples/HairlineCardExample.vue` | hairline 卡三式 —— §5 铁律 + §6.3 全局 ElCard 主题的对照（示例小卡用 `flat` 属 §3 允许档） |

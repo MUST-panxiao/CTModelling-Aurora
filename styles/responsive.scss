@@ -1,8 +1,10 @@
-// 响应式断点 mixin —— 与 useResponsive.ts 的 JS 断点保持一致
-// 用法：@include mobile { ... } / @include tablet { ... }
+// 响应式断点 mixin（SSOT 断点源）
+// 用法：@include mobile { ... } / @include tablet { ... } / @include below-desktop { ... }
 //
-// 注意：SCSS 媒体查询断点与 composables/useResponsive.ts 的 JS 常量必须一致，
-// 改一处必须同步改另一处（design.md §8 双轨断点一致原则）。
+// 组件内使用前置条件（二选一，否则编译报 Undefined mixin）：
+//   ① vite.config 配 css.preprocessorOptions.scss.additionalData 全局注入本文件；
+//   ② 组件 <style lang="scss"> 内局部 `@use '@/styles/responsive.scss' as *;`（路径按项目别名调整）。
+// 若项目存在 JS 断点常量（如 useResponsive.ts），必须与本文件保持一致，改一处同步改另一处。
 
 $mobile-max: 767px;
 $tablet-min: 768px;
@@ -24,6 +26,13 @@ $large-desktop-min: 1440px;
 
 @mixin desktop {
   @media (min-width: $desktop-min) {
+    @content;
+  }
+}
+
+// 平板 + 手机（< 1024px：桌面横向导航隐藏、改用汉堡抽屉的分界）
+@mixin below-desktop {
+  @media (max-width: 1023px) {
     @content;
   }
 }

@@ -14,7 +14,7 @@
 <template>
   <div class="hairline-examples">
     <!-- ① 全局 ElCard 主题：border:none + shadow-flat + backdrop-blur，由 index.scss 全局赋予 -->
-    <el-card class="is-hover" shadow="hover">
+    <el-card class="is-interactive">
       <template #header>全局 ElCard（自动毛玻璃 hairline）</template>
       <p>这个 <code>&lt;el-card&gt;</code> 没有任何自定义样式 —— 边界、圆角、毛玻璃全由 <code>index.scss</code> 的全局 <code>.el-card</code> 规则赋予。</p>
     </el-card>
@@ -47,12 +47,13 @@
   flex-direction: column;
   gap: 6px;
   padding: 18px 20px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--mp-surface-glass);
   border: none; // ✅ 禁用 border
   border-radius: var(--mp-radius-lg);
   box-shadow: var(--mp-shadow-flat); // ✅ 边界走 shadow 的 hairline edge
+  -webkit-backdrop-filter: blur(6px); // WKWebView / Safari ≤17
   backdrop-filter: blur(6px);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--mp-duration-fast) ease;
 
   &:hover {
     box-shadow: var(--mp-shadow-surface-hover); // hover：唯一允许的彩色 ring
@@ -78,10 +79,11 @@
   align-items: center;
   gap: 7px;
   padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--mp-surface-glass-light);
   border: none; // ✅ 禁用 border
   border-radius: var(--mp-radius-pill);
   box-shadow: var(--mp-hairline-edge); // ✅ 极轻 edge
+  -webkit-backdrop-filter: blur(6px); // WKWebView / Safari ≤17
   backdrop-filter: blur(6px);
   font-size: 13px;
   color: var(--mp-text-regular);

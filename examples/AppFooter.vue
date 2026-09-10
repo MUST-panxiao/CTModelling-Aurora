@@ -25,10 +25,11 @@
 </template>
 
 <style scoped lang="scss">
+// 断点用 responsive.scss 的 mixin：需 vite additionalData 全局注入，或在本文件顶部局部 @use（见 README）。
 // 透明底，透出极光背景
 .app-footer {
   position: relative;
-  z-index: 2;
+  z-index: var(--mp-z-footer);
   width: 100%;
 }
 
@@ -89,7 +90,7 @@
   color: var(--mp-text-muted);
 }
 
-@media (max-width: 768px) {
+@include mobile {
   .footer-container {
     padding: 28px 16px 20px;
     gap: 22px;

@@ -3,7 +3,8 @@
 // ─────────────────────────────────────────────────────────────
 // 全站极光光晕背景（纯 CSS，零资源依赖）+ 顶栏 + 内容区 + 底栏。
 // 拷进你的项目：把 AppHeader / AppFooter 换成你的组件，<router-view /> 放业务页。
-// 依赖 styles/index.scss 的 --mp-glow-* / --mp-bg / --mp-radius-* token。
+// 依赖 styles/index.scss 的 --mp-glow-* / --mp-bg / --mp-radius-* token；
+// 断点用 responsive.scss 的 mixin（需 vite additionalData 全局注入或组件内局部 @use 接线，见 README）。
 import AppHeader from './AppHeader.vue'
 import AppFooter from './AppFooter.vue'
 </script>
@@ -33,6 +34,7 @@ import AppFooter from './AppFooter.vue'
 </template>
 
 <style scoped lang="scss">
+// 断点用 responsive.scss 的 mixin：需 vite additionalData 全局注入，或在本文件顶部局部 @use（见 README）。
 .portal-layout {
   display: flex;
   flex-direction: column;
@@ -44,10 +46,10 @@ import AppFooter from './AppFooter.vue'
 .aurora {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: var(--mp-z-aurora);
   pointer-events: none;
   overflow: hidden;
-  background: linear-gradient(180deg, #fdfdff 0%, #f3f6fb 100%);
+  background: linear-gradient(180deg, var(--mp-bg-aurora-top) 0%, var(--mp-bg-aurora-bottom) 100%);
 
   .aurora-shape {
     position: absolute;
@@ -62,7 +64,6 @@ import AppFooter from './AppFooter.vue'
   .aurora-shape-1 {
     top: -8%;
     left: -6%;
-    transform: rotate(-18deg);
     background: radial-gradient(circle, var(--mp-glow-blue-light), transparent 70%);
   }
   .aurora-shape-2 {
@@ -73,7 +74,6 @@ import AppFooter from './AppFooter.vue'
     max-width: 720px;
     max-height: 720px;
     opacity: 0.28;
-    transform: rotate(24deg);
     background: radial-gradient(circle, var(--mp-glow-green), transparent 70%);
   }
 
@@ -111,7 +111,7 @@ import AppFooter from './AppFooter.vue'
 
 .portal-main {
   position: relative;
-  z-index: 1; // 提到 .aurora(fixed) 之上
+  z-index: var(--mp-z-content); // 提到 .aurora(fixed) 之上
   padding: 20px 24px;
   // 不锁高、不用 flex：让各业务页内容自然撑开，由 body 整体滚动
 }
@@ -123,7 +123,7 @@ import AppFooter from './AppFooter.vue'
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@include mobile {
   .portal-main {
     padding: 12px 12px 24px;
   }

@@ -1,23 +1,26 @@
-@use './responsive.scss' as *;
-
 // ============================================================
 // Aurora 设计 Token —— 「专业克制 · 极光呼吸」
 // CTModelling 团队多平台共用的设计语言（单一信源 SSOT）。
+// @version 0.2.0 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
+// 升级前先核对本指纹，判断你平台携带的 Aurora 版本；变更见仓库 CHANGELOG.md。
 // 血缘链：源头版本（最完整）→ 精简版 → 各业务平台对齐源头
 //         → 抽象为 Aurora（SSOT，收敛最新规则）。血缘见 docs/design-tokens.md §0。
 //
 //   · 主色家族：品牌蓝 #2563eb（白底 WCAG AA，全平台统一）
 //   · 极光五色 --mp-glow-*：仅供 aurora 背景装饰，禁用于文字 / 图表
-//   · 字体：阿里普惠体 3.0（local() 优先，CDN 降级）
+//   · 字体：阿里普惠体 3.0（单一 family 三档 weight 400/700/900；local() 优先，CDN 降级）
 //   · hairline 体系：卡片边框一律走 box-shadow 的 1px edge，禁用 border（见 docs/design-tokens.md）
-//   · Element Plus 主题：主色 + 语义色 + 中性灰阶三层 CSS 变量覆盖（见 :root 末段）
-// 修改主题只动本文件，全站（含 Element Plus）自动跟随。
+//   · Element Plus 主题：主色 + 语义色 + 中性灰阶 + 阴影 CSS 变量覆盖（见 :root 末段与全局段）
+// 修改主题只动本文件：--mp-* 改值即换肤，全站（含 Element Plus，经 var()/color-mix 引用）自动跟随。
+// 响应式 mixin 在 responsive.scss（组件内 @include 前需接线，见 README「智能体使用流程」）。
 // ============================================================
 
-// 阿里普惠体 3.0：local() 优先命中用户本地字体（0 网络开销），
-// 缺失时由 jsDelivr CDN 降级；font-display: swap 避免 FOIT。
+// 阿里普惠体 3.0：统一单 family「Alibaba PuHuiTi 3」三档 weight（400/700/900），
+// 业务侧 font-weight: 700/900 即命中真实字面（不再合成加粗）。
+// local() 优先命中用户本地字体（0 网络开销），缺失时由 jsDelivr CDN 降级；
+// font-display: swap 避免 FOIT。离线桌面端 CDN 必失败 → 静默走系统字体栈（见 README「离线环境」）。
 @font-face {
-  font-family: 'Alibaba PuHuiTi 3.0';
+  font-family: 'Alibaba PuHuiTi 3';
   src:
     local('Alibaba PuHuiTi 3.0 Regular'),
     local('AlibabaPuHuiTi-3-55-Regular'),
@@ -28,24 +31,24 @@
   font-display: swap;
 }
 @font-face {
-  font-family: 'Alibaba PuHuiTi 3 95 Black';
-  src:
-    local('Alibaba PuHuiTi 3 95 Black'),
-    local('AlibabaPuHuiTi-3-95-ExtraBold'),
-    url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-95-extrabold/AlibabaPuHuiTi-3-95-ExtraBold.woff2')
-      format('woff2');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Alibaba PuHuiTi 3 Bold';
+  font-family: 'Alibaba PuHuiTi 3';
   src:
     local('Alibaba PuHuiTi 3 85 Bold'),
     local('AlibabaPuHuiTi-3-85-Bold'),
     url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-85-bold/AlibabaPuHuiTi-3-85-Bold.woff2')
       format('woff2');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3';
+  src:
+    local('Alibaba PuHuiTi 3 95 Black'),
+    local('AlibabaPuHuiTi-3-95-ExtraBold'),
+    url('https://cdn.jsdelivr.net/npm/alibabapuhuiti-3-95-extrabold/AlibabaPuHuiTi-3-95-ExtraBold.woff2')
+      format('woff2');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -69,14 +72,14 @@
 
   // ── 字体 token（本地优先，缺失时 CDN 降级） ──
   --mp-font-sans:
-    'Alibaba PuHuiTi 3.0', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+    'Alibaba PuHuiTi 3', -apple-system, BlinkMacSystemFont, 'PingFang SC',
     'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+  // display / bold 与 sans 同 family：用时需配 font-weight（display=900，bold=700），
+  // 否则命中 400 字面。单 family 三档 weight 见文件头 @font-face。
   --mp-font-display:
-    'Alibaba PuHuiTi 3 95 Black', 'Alibaba PuHuiTi 3.0', -apple-system,
-    'PingFang SC', 'Microsoft YaHei', sans-serif;
+    'Alibaba PuHuiTi 3', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --mp-font-bold:
-    'Alibaba PuHuiTi 3 Bold', 'Alibaba PuHuiTi 3.0', -apple-system,
-    'PingFang SC', 'Microsoft YaHei', sans-serif;
+    'Alibaba PuHuiTi 3', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   // ── 背景 / 表面 ──
   --mp-bg: #f5f6f8;
@@ -90,7 +93,7 @@
   --mp-text-secondary: #333333;
   --mp-text-regular: #555555;
   --mp-text-muted: #707070;
-  --mp-text-placeholder: #999999;
+  --mp-text-placeholder: #767676; // 白底 ≈4.54:1，过 WCAG 1.4.3（disabled 豁免不适用 placeholder）
 
   // ── 边框（仅作 token 占位；卡片实际边界一律走 shadow hairline，见下方 --mp-shadow-*） ──
   --mp-border: #c8c8cc;
@@ -98,11 +101,11 @@
   --mp-border-subtle: #e2e2e6;
   --mp-divider: #ebebef;
 
-  // ── 语义状态 ──
+  // ── 语义状态（info 为中性灰：与 §6.1 EP info 对齐一致；勿改回品牌蓝，避免与 primary 混淆） ──
   --mp-success: #22c55e;
   --mp-warning: #f97316;
   --mp-danger: #dc2626;
-  --mp-info: #2563eb;
+  --mp-info: #707070;
 
   // ── 圆角 ──
   --mp-radius-sm: 4px;
@@ -141,6 +144,24 @@
   // ── 布局尺寸 ──
   --mp-header-height: 56px;
 
+  // ── 毛玻璃表面（全站统一玻璃底；勿再硬编码 rgba 白值） ──
+  --mp-surface-glass: rgba(255, 255, 255, 0.72);
+  --mp-surface-glass-light: rgba(255, 255, 255, 0.6);
+
+  // ── 极光背景基线渐变（PortalLayout .aurora 底色） ──
+  --mp-bg-aurora-top: #fdfdff;
+  --mp-bg-aurora-bottom: #f3f6fb;
+
+  // ── 过渡时长 ──
+  --mp-duration-fast: 0.2s;
+  --mp-duration-normal: 0.3s;
+
+  // ── 层级（页面骨架的 z 序，业务浮层按需递增） ──
+  --mp-z-aurora: 0;
+  --mp-z-content: 1;
+  --mp-z-footer: 2;
+  --mp-z-header: 100;
+
   // ============================================================
   // 业务扩展 token（示例值，按需保留 / 删除 / 改值）
   // 以下为公卫监测类项目的常用语义色，非 Aurora 核心。不需要可直接整段删除。
@@ -155,7 +176,7 @@
   // ── 图表色板（供 JS 经 getComputedStyle 读取；按业务自定义语义） ──
   // 1=主监测曲线（主色家族）·2=对比序列(琥珀)·3=高风险/告警(砖红)·4=中风险(橙黄)
   // 5=正常/轻症(翠绿)·6=辅助指标(天蓝)·7=备用紫
-  --mp-chart-1: #2563eb;
+  --mp-chart-1: var(--mp-primary); // 主曲线跟随主色换肤
   --mp-chart-2: #f59e0b;
   --mp-chart-3: #dc2626;
   --mp-chart-4: #fb923c;
@@ -176,21 +197,29 @@
   // ============================================================
   // Element Plus 主题覆盖 —— 主色 #2563eb 家族，按钮 / 链接 / 选中态全统一
   // 本文件必须在 element-plus/dist/index.css 之后引入才能覆盖 --el-*
+  // 主色 / 语义色经 var()/color-mix 引用 --mp-*：改 --mp-* 全站（含 EP）自动跟随。
   // ============================================================
-  --el-color-primary: #2563eb;
+  // light-N 先落 hex 兜底（不支持 color-mix 的极旧内核），支持者走公式值
+  // （对齐 EP 官方公式 mix(白, 主色, N×10%)，与 0.1.0 手调值略有出入，取 EP 口径）。
+  --el-color-primary: var(--mp-primary);
   --el-color-primary-light-3: #5a8af0;
+  --el-color-primary-light-3: color-mix(in srgb, var(--mp-primary), #fff 30%);
   --el-color-primary-light-5: #8daaf5;
+  --el-color-primary-light-5: color-mix(in srgb, var(--mp-primary), #fff 50%);
   --el-color-primary-light-7: #b0c8fa;
+  --el-color-primary-light-7: color-mix(in srgb, var(--mp-primary), #fff 70%);
   --el-color-primary-light-8: #c2d6fc;
+  --el-color-primary-light-8: color-mix(in srgb, var(--mp-primary), #fff 80%);
   --el-color-primary-light-9: #d4e3fd;
-  --el-color-primary-dark-2: #1d4ed8;
+  --el-color-primary-light-9: color-mix(in srgb, var(--mp-primary), #fff 90%);
+  --el-color-primary-dark-2: var(--mp-primary-hover);
 
   // EP 语义色对齐 tokens（el-tag / el-alert 等随之统一）
-  --el-color-success: #22c55e;
-  --el-color-warning: #f97316;
-  --el-color-danger: #dc2626;
-  --el-color-error: #dc2626;
-  --el-color-info: #707070;
+  --el-color-success: var(--mp-success);
+  --el-color-warning: var(--mp-warning);
+  --el-color-danger: var(--mp-danger);
+  --el-color-error: var(--mp-danger);
+  --el-color-info: var(--mp-info);
 
   // ── EP 中性灰阶对齐 Aurora（合并自最新规则）──
   // 让全站 EP 组件（ElCard / ElTable / ElDialog / ElForm / ElInput...）的中性灰阶
@@ -220,6 +249,11 @@
   --el-border-color-lighter: var(--mp-border-subtle);
   --el-border-color-extra-light: var(--mp-divider);
   --el-border-color-dark: var(--mp-border-strong);
+  // 阴影：EP 浮层组件（Dialog/Dropdown/Popover）与 .is-*-shadow 卡片一并入 hairline 体系
+  --el-box-shadow: var(--mp-shadow-overlay);
+  --el-box-shadow-light: var(--mp-shadow-overlay);
+  --el-box-shadow-lighter: var(--mp-shadow-flat);
+  --el-box-shadow-dark: var(--mp-shadow-overlay);
 }
 
 * {
@@ -289,19 +323,30 @@ textarea {
 // 全站 ElCard 默认呈现与介绍页 / 工作台一致的观感：
 // 半透明白底 + backdrop-blur + shadow hairline edge + 12px 圆角 + flat shadow。
 // 边框交给 shadow 的 hairline edge（见 box-shadow），禁用 EP 默认 border 避免双线。
-// hover 反馈仅作用于可交互卡片（.is-hover）。
+// hover 反馈仅作用于可交互卡片（.is-interactive，业务侧自行挂类）。
 // ============================================================
 .el-card {
   border: none;
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: var(--mp-surface-glass);
   border-radius: var(--mp-radius-lg);
   box-shadow: var(--mp-shadow-flat);
+  -webkit-backdrop-filter: blur(6px); // WKWebView / Safari ≤17
   backdrop-filter: blur(6px);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--mp-duration-fast) ease;
 }
 
-.el-card.is-hover:hover {
-  border-color: rgba(37, 99, 235, 0.3);
+// EP 自带 .is-always-shadow / .is-hover-shadow（特异性 0,2,0）高于 .el-card（0,1,0），
+// 且 el-card 的 shadow prop 默认 "always" —— 必须同特异性压回 hairline，
+// 否则默认 el-card 渲染 EP 灰投影、hairline edge 丢失。
+.el-card.is-always-shadow,
+.el-card.is-hover-shadow,
+.el-card.is-hover-shadow:hover,
+.el-card.is-hover-shadow:focus {
+  box-shadow: var(--mp-shadow-flat);
+}
+
+// 可交互卡片的 hover 反馈（唯一允许的彩色 ring，见 docs §9）
+.el-card.is-interactive:hover {
   box-shadow: var(--mp-shadow-surface-hover);
 }
 
