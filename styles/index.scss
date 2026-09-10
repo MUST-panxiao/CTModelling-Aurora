@@ -1,7 +1,7 @@
 // ============================================================
 // Aurora 设计 Token —— 「专业克制 · 极光呼吸」
 // CTModelling 团队多平台共用的设计语言（单一信源 SSOT）。
-// @version 0.2.1 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
+// @version 0.2.2 (2026-09-11) · @source github.com/MUST-panxiao/CTModelling-Aurora
 // 升级前先核对本指纹，判断你平台携带的 Aurora 版本；变更见仓库 CHANGELOG.md。
 // 血缘链：源头版本（最完整）→ 精简版 → 各业务平台对齐源头
 //         → 抽象为 Aurora（SSOT，收敛最新规则）。血缘见 docs/design-tokens.md §0。
@@ -60,8 +60,11 @@
   --mp-primary-light: #3b82f6;
   --mp-primary-lighter: #60a5fa;
   --mp-primary-deep: #1e40af;
-  --mp-primary-bg: rgba(37, 99, 235, 0.06);
-  --mp-primary-bg-hover: rgba(37, 99, 235, 0.1);
+  // 主色 RGB 数值档：供 rgba(var(--mp-primary-rgb), α) 组合（含 hover ring），
+  // 换肤时交互反馈色自动跟随。刻意不走 color-mix（旧内核 IACVT 会整段失效，见 0.2.1）。
+  --mp-primary-rgb: 37, 99, 235;
+  --mp-primary-bg: rgba(var(--mp-primary-rgb), 0.06);
+  --mp-primary-bg-hover: rgba(var(--mp-primary-rgb), 0.1);
 
   // ── 极光光晕色（仅供 aurora 背景装饰，禁用于文字 / 图表） ──
   --mp-glow-green: #a8cf45;
@@ -94,6 +97,7 @@
   --mp-text-regular: #555555;
   --mp-text-muted: #707070;
   --mp-text-placeholder: #767676; // 白底 ≈4.54:1，过 WCAG 1.4.3（disabled 豁免不适用 placeholder）
+  --mp-text-disabled: #a5a5aa; // 禁用态（WCAG 豁免）：明显浅于 placeholder，保持禁用可供性（勿与 muted 混用）
 
   // ── 边框（仅作 token 占位；卡片实际边界一律走 shadow hairline，见下方 --mp-shadow-*） ──
   --mp-border: #c8c8cc;
@@ -116,12 +120,14 @@
 
   // ── 阴影（亮色 hairline 体系，对齐源头完整版） ──
   // surface-hover / overlay 末尾的 inset top-glow 不可省略（血缘），否则失去顶部高光。
+  // top-glow 分级是有意设计：surface/flat 档 0.5，surface-hover / overlay 档 0.6——
+  // 交互反馈与浮层需要更强的顶部高光，勿「对齐」抹平。
   --mp-shadow-flat: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --mp-shadow-surface:
     0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04),
     0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   --mp-shadow-surface-hover:
-    0 0 0 1px rgba(37, 99, 235, 0.2), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(var(--mp-primary-rgb), 0.2), 0 2px 4px rgba(0, 0, 0, 0.05),
     0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   --mp-shadow-overlay:
     0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.1),
@@ -199,16 +205,16 @@
   // 本文件必须在 element-plus/dist/index.css 之后引入才能覆盖 --el-*
   // 主色 / 语义色经 var()/color-mix 引用 --mp-*：改 --mp-* 全站（含 EP）自动跟随。
   // ============================================================
-  // light-N：hex 行为兜底值；支持 color-mix 的内核在下方 @supports 内改走公式值
-  // （EP 官方公式 mix(白, 主色, N×10%)）。不能用「hex + color-mix 两行同写」做兜底——
-  // 自定义属性无解析期校验、级联后者恒胜，var() 替换出非法值时按 IACVT 回退 initial
-  // （背景变透明）而非回退前行 hex，旧内核上 light-3~9 会整层失效，必须用 @supports 隔离。
+  // light-N：hex 行为兜底值（已按 EP 公式实算，与 @supports 内公式值同观感），
+  // 支持 color-mix 的内核改走 var(--mp-primary) 公式、换肤自动跟随。不能用「hex + color-mix
+  // 两行同写」做兜底——自定义属性无解析期校验、级联后者恒胜，var() 替换出非法值时按 IACVT
+  // 回退 initial（背景变透明）而非回退前行 hex，旧内核上 light-3~9 会整层失效，必须 @supports 隔离。
   --el-color-primary: var(--mp-primary);
-  --el-color-primary-light-3: #5a8af0;
-  --el-color-primary-light-5: #8daaf5;
-  --el-color-primary-light-7: #b0c8fa;
-  --el-color-primary-light-8: #c2d6fc;
-  --el-color-primary-light-9: #d4e3fd;
+  --el-color-primary-light-3: #6692f1;
+  --el-color-primary-light-5: #92b1f5;
+  --el-color-primary-light-7: #bed0f8;
+  --el-color-primary-light-8: #d3e0fb;
+  --el-color-primary-light-9: #e9effd;
   --el-color-primary-dark-2: var(--mp-primary-hover);
 
   // EP 语义色对齐 tokens（el-tag / el-alert 等随之统一）
@@ -236,7 +242,7 @@
   --el-text-color-regular: var(--mp-text-regular);
   --el-text-color-secondary: var(--mp-text-muted);
   --el-text-color-placeholder: var(--mp-text-placeholder);
-  --el-text-color-disabled: var(--mp-text-placeholder);
+  --el-text-color-disabled: var(--mp-text-disabled);
   --el-text-color-disabled-light: var(--mp-border);
   // 背景
   --el-bg-color: var(--mp-surface);
@@ -255,9 +261,14 @@
   --el-border-color-lighter: var(--mp-border-subtle);
   --el-border-color-extra-light: var(--mp-divider);
   --el-border-color-dark: var(--mp-border-strong);
-  // 阴影：EP 浮层组件（Dialog/Dropdown/Popover）与 .is-*-shadow 卡片一并入 hairline 体系
+  // 阴影：EP 浮层组件随 hairline 体系，按浮层体量分两档——
+  // 基座/dark（Dialog/Drawer/MessageBox 等模态）→ overlay（含 1px ring）；
+  // light（popper/popover/tooltip/select 下拉等小浮层）→ contact+ambient+top-glow 组合
+  //（无 ring：popper 自带 border，再叠 ring 即双 hairline，且大 ambient 会压小浮层）；
+  // lighter → flat。
   --el-box-shadow: var(--mp-shadow-overlay);
-  --el-box-shadow-light: var(--mp-shadow-overlay);
+  --el-box-shadow-light: var(--mp-hairline-contact), var(--mp-hairline-ambient),
+    var(--mp-hairline-top-glow);
   --el-box-shadow-lighter: var(--mp-shadow-flat);
   --el-box-shadow-dark: var(--mp-shadow-overlay);
 }

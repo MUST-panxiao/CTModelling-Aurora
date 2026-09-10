@@ -2,6 +2,17 @@
 
 本仓库遵循 [Semantic Versioning](https://semver.org/)。`styles/index.scss` 头部带 `@version` 指纹，拷贝方据此对号入座。
 
+## 0.2.2 (2026-09-11)
+
+v3 复评 Phase D 开放项闭环（设计拍板 + 搭车修）：
+
+- **fix(styles)**: N3——`--el-box-shadow-light` 改映射 contact+ambient+top-glow 组合（无 ring）：popper/popover/tooltip/select 下拉等小浮层不再与自带 border 叠双 hairline，大 ambient 不再压小浮层；overlay（含 ring）保留给 Dialog/Drawer 等模态档（`--el-box-shadow` 基座 / `-dark`）。
+- **fix(styles)**: N5——新增 `--mp-text-disabled: #a5a5aa`，`--el-text-color-disabled` 改指向之：禁用态明显浅于 placeholder（#767676），恢复禁用可供性。
+- **refactor(tokens)**: 新增 `--mp-primary-rgb: 37, 99, 235`；hover 蓝 ring 与 `--mp-primary-bg(-hover)` 改 `rgba(var(--mp-primary-rgb), α)` 引用——换肤时交互反馈色自动跟随（刻意不用 color-mix，避免复发 N1 的 IACVT 问题）。
+- **fix(styles)**: light-3~9 hex 兜底值按 EP 公式重算（#6692f1 / #92b1f5 / #bed0f8 / #d3e0fb / #e9effd），兜底与公式档观感一致。
+- **fix(examples)**: nav-item 44px 并 `@include touch-target`（≥1024px 的 iPad 横屏触屏可达）；drawer-item 同步挂 mixin；`.user-name` 补 nowrap+ellipsis（长用户名不撑高触发器）。
+- **docs**: §4 注明 top-glow 0.5/0.6 为有意分级；§6.2 更新阴影两档映射；§7.1 补文字六级层级（含新增 disabled）与 `--mp-primary-rgb`；§7 补 `getComputedStyle` 图表读取示例。
+
 ## 0.2.1 (2026-09-11)
 
 Delta 复评（v3）当轮热修，修复 0.2.0 自引入的两处确定性缺陷：

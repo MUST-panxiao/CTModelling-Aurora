@@ -255,7 +255,8 @@ function onCommand(command: string): void {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 36px;
+  @include touch-target; // 44px 触摸目标（≥1024px 的 iPad 横屏触屏可达桌面导航）
+  height: 44px;
   padding: 0 14px;
   background: transparent;
   border: none;
@@ -332,6 +333,10 @@ function onCommand(command: string): void {
   font-size: 13px;
   color: var(--mp-text);
   font-weight: 500;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // 长用户名不撑高触发器
 }
 
 .caret {
@@ -382,6 +387,7 @@ function onCommand(command: string): void {
   display: flex;
   align-items: center;
   gap: 12px;
+  @include touch-target; // 44px 触摸目标
   height: 44px;
   padding: 0 16px;
   border: none;

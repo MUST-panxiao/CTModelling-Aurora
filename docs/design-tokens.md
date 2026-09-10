@@ -72,6 +72,8 @@ Aurora 是上述各版本设计规则的**收敛点**：规则在此一处定义
 
 组合关系：`surface = edge + contact + ambient + top-glow`。
 
+> top-glow 分级是有意设计：surface / flat 档白光 0.5，surface-hover / overlay 档 0.6——交互反馈与浮层需要更强的顶部高光，勿「对齐」抹平。
+
 ---
 
 ## 5. 卡片边框铁律（★Aurora 核心）
@@ -119,7 +121,7 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 | `--el-fill-color-*` | `--mp-bg-secondary` / `--mp-surface*` | 6 |
 | `--el-border-color-*` | `--mp-border*` | 5 |
 
-> 仅映射中性灰阶；主色 / 语义色由 6.1 覆盖，圆角不动；阴影已并入 hairline 体系（`--el-box-shadow*` → `--mp-shadow-*`，EP 浮层组件随之统一）。
+> 仅映射中性灰阶；主色 / 语义色由 6.1 覆盖，圆角不动；阴影按浮层体量分两档并入 hairline 体系：`--el-box-shadow`（基座）/ `-dark` → `--mp-shadow-overlay`（Dialog/Drawer 等模态，含 1px ring）；`-light` → contact+ambient+top-glow 组合（popper/popover/tooltip/select 下拉等小浮层，无 ring——popper 自带 border，叠 ring 即双 hairline）；`-lighter` → `--mp-shadow-flat`。
 
 ### 6.3 全局 `.el-card` 主题
 所有 `el-card` 默认呈现与介绍页 / 工作台一致的毛玻璃 hairline 观感，**无需逐个写样式**：
@@ -169,6 +171,8 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 | 表面（毛玻璃） | `--mp-surface-glass` / `--mp-surface-glass-light` | `rgba(255,255,255,0.72)` / `0.6` —— 全站统一玻璃底，勿再硬编码白值 |
 | 极光底色 | `--mp-bg-aurora-top` / `--mp-bg-aurora-bottom` | `#fdfdff` / `#f3f6fb`（PortalLayout `.aurora` 基线渐变） |
 | 语义状态 | `--mp-success` / `--mp-warning` / `--mp-danger` / `--mp-info` | `#22c55e` / `#f97316` / `#dc2626` / **`#707070`（中性灰，见 §6.1）** |
+| 文字层级 | `--mp-text` / `--mp-text-secondary` / `--mp-text-regular` / `--mp-text-muted` / `--mp-text-placeholder` / `--mp-text-disabled` | `#1a1a1e` 主文字 · `#333333` 次强调 · `#555555` 常规正文 · `#707070` 弱化 · `#767676` 占位 · `#a5a5aa` 禁用（明显浅于占位，保持禁用可供性） |
+| 主色派生 | `--mp-primary-rgb` | `37, 99, 235` —— 供 `rgba(var(--mp-primary-rgb), α)` 组合（hover ring、primary-bg），换肤自动跟随 |
 | 间距 | `--mp-space-1` … `--mp-space-6` | 4 / 8 / 12 / 16 / 24 / 32px |
 | 布局 | `--mp-header-height` | `56px` |
 | 过渡 | `--mp-duration-fast` / `--mp-duration-normal` | `0.2s` / `0.3s` |
@@ -176,6 +180,14 @@ Aurora 用 CSS 变量把 Element Plus 全量拉入品牌系统，**主色/语义
 | 字体补充 | `--mp-font-display` / `--mp-font-bold` | 单 family「Alibaba PuHuiTi 3」，用时配 `font-weight: 900` / `700` |
 | 工具类 | `.text-fluid-sm` / `.text-fluid-md` / `.w-full` / `.op-50` / `.text-xs` | 流体字号与高频工具类，随 styles/ 全局生效 |
 | 基础样式 | `body` 14px 基准 + 细滚动条 | 由 index.scss 全局提供，项目内勿重复定义 |
+
+图表读取示例（业务 JS 消费 `--mp-chart-*`）：
+
+```js
+const mpToken = (name) =>
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+// mpToken('--mp-chart-1') → '#2563eb'（换肤后自动为新主色）
+```
 
 ---
 
